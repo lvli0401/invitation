@@ -2,6 +2,7 @@ const path = require('path')
 // 根据相对路径获取绝对路径
 const resolvePath = relativePath => path.resolve(__dirname, relativePath)
 const webpack = require('webpack')
+const HappyPack = require('happypack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 // 分析包内容
@@ -9,9 +10,17 @@ const BundleAnalyzerPlugin =
   require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 module.exports = () => {
   const prod = process.env.NODE_ENV === 'production'
-  const styleLoader = (loaders = []) => [
+  const styleLoader = (loaders = [], modules = true) => [
     prod ? MiniCssExtractPlugin.loader : 'style-loader',
-    'css-loader',
+    {
+      loader: 'css-loader', // translates CSS into CommonJS
+      options: {
+        importLoaders: 1,
+        modules,
+        sourceMap: true,
+        // localIdentName: '[name]__[local]__[hash:base64:5]', //
+      },
+    },
     ...loaders,
   ]
 
@@ -29,7 +38,7 @@ module.exports = () => {
         {
           test: /\.(jsx?|tsx?)$/,
           exclude: /node_modules/,
-          use: 'babel-loader',
+          use: ['happypack/loader?id=babel'],
         },
         {
           test: /\.css$/,
@@ -37,14 +46,17 @@ module.exports = () => {
         },
         {
           test: /\.scss$/,
-          use: styleLoader([
-            {
-              loader: 'sass-loader',
-              options: {
-                implementation: require('sass'),
+          use: styleLoader(
+            [
+              {
+                loader: 'sass-loader',
+                options: {
+                  implementation: require('sass'),
+                },
               },
-            },
-          ]),
+            ],
+            true,
+          ),
         },
         {
           test: /\.(jpe?g|png|gif|bmp|svg)$/,
@@ -98,6 +110,16 @@ module.exports = () => {
         template: './public/index.html',
         // 名称为
         filename: 'index.html',
+      }),
+      new HappyPack({
+        /*
+         * 必须配置
+         */
+        // id 标识符，要和 rules 中指定的 id 对应起来
+        id: 'babel',
+        // 需要使用的 loader，用法和 rules 中 Loader 配置一样
+        // 可以直接是字符串，也可以是对象形式
+        loaders: ['babel-loader?cacheDirectory'],
       }),
       new BundleAnalyzerPlugin({
         // analyzerMode: 'disabled', // 不启动展示打包报告的http服务器
