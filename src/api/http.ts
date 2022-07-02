@@ -28,13 +28,14 @@ axios.interceptors.request.use(
  */
 axios.interceptors.response.use(
   response => {
-    if (response.data.errCode === 2) {
-      console.log('过期')
-    }
+    // if (response.data.errCode === 2) {
+    //   console.log('过期')
+    // }
     return response
   },
   error => {
     console.log('请求出错：', error)
+    return Promise.reject(error.response.data.errorMessage)
   },
 )
 

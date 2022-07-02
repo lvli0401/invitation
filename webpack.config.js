@@ -31,6 +31,7 @@ module.exports = () => {
       path: path.resolve('./app'),
       filename: prod ? 'js/[name].[contenthash:8].js' : 'js/[name].js',
       publicPath: '',
+      library: '[name]_library',
     },
     module: {
       rules: [
@@ -63,7 +64,7 @@ module.exports = () => {
           use: ['happypack/loader?id=less'],
         },
         {
-          test: /\.(jpe?g|png|gif|bmp|svg)$/,
+          test: /\.(jpe?g|png|gif|bmp)$/,
           use: ['happypack/loader?id=url-loader'],
         },
         {
@@ -71,6 +72,33 @@ module.exports = () => {
           use: ['happypack/loader?id=file-loader'],
         },
       ],
+    },
+    optimization: {
+      splitChunks: {
+        cacheGroups: {
+          vendors: {
+            priority: -10,
+            test: /[\\/]node_modules[\\/]/,
+          },
+          commons: {
+            name: 'commons',
+            priority: 10,
+            chunks: 'initial',
+          },
+          styles: {
+            name: 'styles',
+            test: /\.css$/,
+            chunks: 'all',
+            minChunks: 2,
+            enforce: true,
+          },
+        },
+
+        chunks: 'async',
+        minChunks: 1,
+        minSize: 30000,
+        name: true,
+      },
     },
     resolve: {
       modules: ['node_modules', 'src'],
@@ -143,7 +171,7 @@ module.exports = () => {
           {
             loader: 'url-loader',
             options: {
-              limit: 8 * 1024,
+              limit: 2 * 1024,
               name: prod ? 'img/[name].[contenthash:8].[ext]' : '[name].[ext]',
             },
           },
@@ -167,7 +195,7 @@ module.exports = () => {
       new webpack.EnvironmentPlugin({
         ...process.env,
       }),
-      prod &&
+      prod &
         new MiniCssExtractPlugin({
           filename: 'css/[name].[contenthash:8].css',
         }),
