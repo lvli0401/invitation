@@ -18,7 +18,6 @@ module.exports = () => {
         importLoaders: 1,
         modules,
         sourceMap: true,
-        // localIdentName: '[name]__[local]__[hash:base64:5]', //
       },
     },
     ...loaders,
@@ -42,7 +41,8 @@ module.exports = () => {
         },
         {
           test: /\.css$/,
-          use: styleLoader(),
+          // use: styleLoader(),
+          use: ['happypack/loader?id=css'],
         },
         {
           test: /\.scss$/,
@@ -59,23 +59,16 @@ module.exports = () => {
           ),
         },
         {
+          test: /\.less$/,
+          use: ['happypack/loader?id=less'],
+        },
+        {
           test: /\.(jpe?g|png|gif|bmp|svg)$/,
-          use: {
-            loader: 'url-loader',
-            options: {
-              limit: 8 * 1024,
-              name: prod ? 'img/[name].[contenthash:8].[ext]' : '[name].[ext]',
-            },
-          },
+          use: ['happypack/loader?id=url-loader'],
         },
         {
           test: /\.(svg|eot|woff|ttf)$/,
-          use: {
-            loader: 'file-loader',
-            options: {
-              name: prod ? 'font/[name].[contenthash:8].[ext]' : '[name].[ext]',
-            },
-          },
+          use: ['happypack/loader?id=file-loader'],
         },
       ],
     },
@@ -120,6 +113,52 @@ module.exports = () => {
         // 需要使用的 loader，用法和 rules 中 Loader 配置一样
         // 可以直接是字符串，也可以是对象形式
         loaders: ['babel-loader?cacheDirectory'],
+      }),
+      new HappyPack({
+        id: 'css',
+        loaders: styleLoader(),
+      }),
+      new HappyPack({
+        id: 'less',
+        loaders: styleLoader(
+          [
+            {
+              loader: 'less-loader',
+              options: {
+                modifyVars: {
+                  'primary-color': '#1DA57A',
+                  'link-color': '#1DA57A',
+                  'border-radius-base': '2px',
+                },
+                javascriptEnabled: true,
+              },
+            },
+          ],
+          false,
+        ),
+      }),
+      new HappyPack({
+        id: 'url-loader',
+        loaders: [
+          {
+            loader: 'url-loader',
+            options: {
+              limit: 8 * 1024,
+              name: prod ? 'img/[name].[contenthash:8].[ext]' : '[name].[ext]',
+            },
+          },
+        ],
+      }),
+      new HappyPack({
+        id: 'file-loader',
+        loaders: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: prod ? 'font/[name].[contenthash:8].[ext]' : '[name].[ext]',
+            },
+          },
+        ],
       }),
       new BundleAnalyzerPlugin({
         // analyzerMode: 'disabled', // 不启动展示打包报告的http服务器
