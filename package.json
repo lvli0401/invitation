@@ -3,8 +3,7 @@
   "version": "0.1.0",
   "scripts": {
     "start": "NODE_ENV=development webpack-dev-server",
-    "build": "NODE_ENV=production webpack",
-    "git-push": "git add . && git commit && git push"
+    "build": "NODE_ENV=production webpack"
   },
   "dependencies": {
     "antd": "^3.19.2",
