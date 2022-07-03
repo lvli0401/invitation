@@ -5,6 +5,10 @@ const webpack = require('webpack')
 const HappyPack = require('happypack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+const os = require('os')
+const happyThreadPool = HappyPack.ThreadPool({ size: os.cpus().length })
+
 // 分析包内容
 const BundleAnalyzerPlugin =
   require('webpack-bundle-analyzer').BundleAnalyzerPlugin
@@ -42,8 +46,7 @@ module.exports = () => {
         },
         {
           test: /\.css$/,
-          // use: styleLoader(),
-          use: ['happypack/loader?id=css'],
+          use: styleLoader(),
         },
         {
           test: /\.scss$/,
@@ -61,7 +64,22 @@ module.exports = () => {
         },
         {
           test: /\.less$/,
-          use: ['happypack/loader?id=less'],
+          use: styleLoader(
+            [
+              {
+                loader: 'less-loader',
+                options: {
+                  modifyVars: {
+                    'primary-color': '#1DA57A',
+                    'link-color': '#1DA57A',
+                    'border-radius-base': '2px',
+                  },
+                  javascriptEnabled: true,
+                },
+              },
+            ],
+            false,
+          ),
         },
         {
           test: /\.(jpe?g|png|gif|bmp)$/,
@@ -99,6 +117,25 @@ module.exports = () => {
         minSize: 30000,
         name: true,
       },
+      minimizer: [
+        new UglifyJsPlugin({
+          test: /\.js(\?.*)?$/i, //测试匹配文件,
+          // include: /\/includes/, //包含哪些文件
+          // excluce: /\/excludes/, //不包含哪些文件
+          cache: false, //是否启用文件缓存，默认缓存在node_modules/.cache/uglifyjs-webpack-plugin.目录
+          parallel: true, //使用多进程并行运行来提高构建速度
+          sourceMap: true,
+          //允许过滤哪些块应该被uglified（默认情况下，所有块都是uglified）。
+          //返回true以uglify块，否则返回false。
+          chunkFilter: chunk => {
+            // `vendor` 模块不压缩
+            if (chunk.name === 'vendor') {
+              return false
+            }
+            return true
+          },
+        }),
+      ],
     },
     resolve: {
       modules: ['node_modules', 'src'],
@@ -140,33 +177,14 @@ module.exports = () => {
         id: 'babel',
         // 需要使用的 loader，用法和 rules 中 Loader 配置一样
         // 可以直接是字符串，也可以是对象形式
+        threadPool: happyThreadPool,
+        verbose: process.env.HAPPY_VERBOSE === '1',
         loaders: ['babel-loader?cacheDirectory'],
       }),
       new HappyPack({
-        id: 'css',
-        loaders: styleLoader(),
-      }),
-      new HappyPack({
-        id: 'less',
-        loaders: styleLoader(
-          [
-            {
-              loader: 'less-loader',
-              options: {
-                modifyVars: {
-                  'primary-color': '#1DA57A',
-                  'link-color': '#1DA57A',
-                  'border-radius-base': '2px',
-                },
-                javascriptEnabled: true,
-              },
-            },
-          ],
-          false,
-        ),
-      }),
-      new HappyPack({
         id: 'url-loader',
+        threadPool: happyThreadPool,
+        verbose: process.env.HAPPY_VERBOSE === '1',
         loaders: [
           {
             loader: 'url-loader',
@@ -179,6 +197,8 @@ module.exports = () => {
       }),
       new HappyPack({
         id: 'file-loader',
+        threadPool: happyThreadPool,
+        verbose: process.env.HAPPY_VERBOSE === '1',
         loaders: [
           {
             loader: 'file-loader',
@@ -195,7 +215,7 @@ module.exports = () => {
       new webpack.EnvironmentPlugin({
         ...process.env,
       }),
-      prod &
+      prod &&
         new MiniCssExtractPlugin({
           filename: 'css/[name].[contenthash:8].css',
         }),
