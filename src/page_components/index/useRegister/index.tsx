@@ -33,14 +33,27 @@ const useRegister = () => {
       })
       if (res === 'Registered') {
         cancel()
-        Modal.info({
+        const modal = Modal.info({
           icon: null,
+          style: { padding: 0 },
           content: (
-            <div>
-              <p>All done!</p>
-              <Button>ok</Button>
+            <div className={s.success}>
+              <h3>All done!</h3>
+              <p>
+                You will be the first to experience Broccoli &amp; Co. when we
+                launch.
+              </p>
+              <Button
+                type='primary'
+                className={s.successBtn}
+                onClick={() => modal.destroy()}
+              >
+                ok
+              </Button>
             </div>
           ),
+          centered: true,
+          okButtonProps: { style: { height: 0, display: 'none' } },
         })
       }
     } catch (e) {
@@ -95,14 +108,17 @@ const useRegister = () => {
         />
         <Button
           data-testid='send'
-          loading={loading}
           type='primary'
+          loading={false}
+          style={loading ? { color: 'rgba(#fff, 0.7)' } : {}}
           className={s.button}
           onClick={send}
         >
-          Send
+          {loading ? 'Sending, please wait...' : 'Send'}
         </Button>
-        <p className={s.error}>{error}</p>
+        <p data-testid='error' className={s.error}>
+          {error}
+        </p>
       </div>
     </Modal>
   )

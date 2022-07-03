@@ -1,3 +1,20 @@
+%commonH3 {
+  font-size: 16px;
+  color: black;
+  position: relative;
+  margin-bottom: 40px;
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -10px;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 1px;
+    background-color: black;
+  }
+}
 .content {
   margin: 20px 0;
   display: flex;
@@ -7,21 +24,7 @@
   position: relative;
 
   & > h3 {
-    font-size: 16px;
-    color: black;
-    position: relative;
-    margin-bottom: 40px;
-
-    &::after {
-      content: '';
-      position: absolute;
-      left: 50%;
-      bottom: -10px;
-      transform: translateX(-50%);
-      width: 40px;
-      height: 1px;
-      background-color: black;
-    }
+    @extend %commonH3;
   }
 
   .input {
@@ -29,7 +32,7 @@
     margin-bottom: 10px;
   }
   .button {
-    width: 150px;
+    width: 200px;
     margin: 20px 0;
   }
   .error {
@@ -42,7 +45,29 @@
     white-space: nowrap;
   }
 }
-
+.success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  & > h3 {
+    @extend %commonH3;
+    font-size: 30px;
+    margin: 0;
+  }
+  & > p {
+    margin: 20px 0;
+    font-size: 16px;
+    max-width: 300px;
+    text-align: center;
+  }
+  &Btn {
+    width: 200px;
+    margin: 0;
+    font-size: 14px;
+  }
+}
+:global(.ant-modal-confirm .ant-modal-body),
 :global(.ant-modal-body) {
   padding: 20px 0px;
 }
