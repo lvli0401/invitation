@@ -1,6 +1,14 @@
 module.exports = {
   moduleNameMapper: {
-    // '^@/(.*)$': '<rootDir>/src/$1',
+    '^@/(.*)$': '<rootDir>/src/$1',
+  },
+  transform: {
+    '^.+\\.(ts|tsx|js|jsx)?$': 'ts-jest',
+  },
+  globals: {
+    'ts-jest': {
+      isolatedModules: true,
+    },
   },
   // 是否显示覆盖率报告
   collectCoverage: true,
