@@ -34,6 +34,12 @@
   .button {
     width: 200px;
     margin: 20px 0;
+
+    &Loading {
+      width: 200px;
+      margin: 20px 0;
+      color: rgba(#fff, 0.7);
+    }
   }
   .error {
     font-size: 12px;

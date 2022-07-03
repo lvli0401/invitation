@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useMemo } from 'react'
 import { Modal, Input, Button } from 'antd'
 import { registerPost } from '@/api/request'
 import s from './index.module.scss'
@@ -110,8 +110,7 @@ const useRegister = () => {
           data-testid='send'
           type='primary'
           loading={false}
-          style={loading ? { color: 'rgba(#fff, 0.7)' } : {}}
-          className={s.button}
+          className={!loading ? s.button : s.buttonLoading}
           onClick={send}
         >
           {loading ? 'Sending, please wait...' : 'Send'}
