@@ -6,7 +6,7 @@ A invitation page project for Broccoli & Co.
 
 1. `git clone https://github.com/lvli0401/invitation.git <dir-name>`  
 2. `cd <dir-name>`
-3. `yarn` or `cnpm i` or `npm i`
+3. `yarn` or `npm i`
 
 ### run in dev:
 
@@ -15,5 +15,8 @@ A invitation page project for Broccoli & Co.
 ### build:
 
 `yarn build` or `npm run build`
+
+### test
+`yarn test` or `npm run test`
 
 ### screenshots:
