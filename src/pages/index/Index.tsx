@@ -17,7 +17,12 @@ export default () => {
         <p>A better way</p>
         <p>to enjoy every day.</p>
         <p>Be the first to known when we launch</p>
-        <Button type='primary' className={s.button} onClick={open}>
+        <Button
+          data-testid='invite'
+          type='primary'
+          className={s.button}
+          onClick={open}
+        >
           Request an invite
         </Button>
       </div>

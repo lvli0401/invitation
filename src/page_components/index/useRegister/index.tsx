@@ -63,6 +63,7 @@ const useRegister = () => {
   const { name, email, confirmEmail } = data
   const modal = (
     <Modal
+      data-testid='modal'
       width={400}
       title={null}
       visible={visible}
@@ -72,24 +73,28 @@ const useRegister = () => {
       <div className={s.content}>
         <h3>Request an invite</h3>
         <Input
+          data-testid='name'
           value={name}
           onChange={(e: inputEvent) => changeData(e, 'name')}
           className={s.input}
           placeholder='Full name'
         />
         <Input
+          data-testid='email'
           value={email}
           onChange={(e: inputEvent) => changeData(e, 'email')}
           className={s.input}
           placeholder='Email'
         />
         <Input
+          data-testid='confirmEmail'
           value={confirmEmail}
           onChange={(e: inputEvent) => changeData(e, 'confirmEmail')}
           className={s.input}
           placeholder='Confirm Email'
         />
         <Button
+          data-testid='send'
           loading={loading}
           type='primary'
           className={s.button}
